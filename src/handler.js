@@ -150,7 +150,8 @@ const editBookById = (request, h) => {
   }
 
   const indexBook = books.findIndex((book) => book.id === bookId);
-
+  const indexReading = books.findIndex((read) => read.reading == true);
+  console.log('reading', indexReading);
   if (indexBook !== -1) {
     books[indexBook] = {
       ...books[indexBook],
@@ -171,13 +172,23 @@ const editBookById = (request, h) => {
     response.code(200);
     return response;
   }
+  //* tambah error
+  //  else if (indexReading) {
+  //   const response = h.response({
+  //     data: {
+  //       books,
+  //     },
+  //   });
+  //   response.code(200);
+  //   return response;
+  // }
 
-  h.response = response({
+  const response = h.response({
     status: 'fail',
     message: 'Gagal memperbarui buku. Id tidak ditemukan',
   });
 
-  response.code(400);
+  response.code(404);
   return response;
 };
 
@@ -185,6 +196,10 @@ const deleteBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
 
   const indexBook = books.findIndex((book) => book.id === bookId);
+  const bookFinished = books.findIndex((finish) => finish.finished == true);
+
+  console.log('indexBook = ', indexBook);
+  console.log('bookFinish = ', bookFinished);
 
   if (indexBook !== -1) {
     books.splice(indexBook, 1);
@@ -195,15 +210,24 @@ const deleteBookByIdHandler = (request, h) => {
 
     response.code(200);
     return response;
+  } else if (bookFinished !== -1) {
+    books.splice(indexBook, 1);
+    const response = h.response({
+      status: 'success',
+      message: 'Buku berhasil dihapus',
+    });
+
+    response.code(200);
+    return response;
+  } else {
+    const response = h.response({
+      status: 'fail',
+      message: 'Buku gagal dihapus. Id tidak ditemukan',
+    });
+
+    response.code(404);
+    return response;
   }
-
-  const response = h.response({
-    status: 'fail',
-    message: 'Buku gagal dihapus. Id tidak ditemukan',
-  });
-
-  response.code(404);
-  return response;
 };
 
 module.exports = {
