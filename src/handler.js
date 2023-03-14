@@ -76,17 +76,58 @@ const addBookHandler = (request, h) => {
   return response;
 };
 
+// const getAllBookHandler = (request, h) => {
+//   const response = h.response({
+//     status: 'success',
+//     data: {
+//       books: books.map((book) => ({
+//         id: book.id,
+//         name: book.name,
+//         publisher: book.publisher,
+//       })),
+//     },
+//   });
+
+//   response.code(200);
+//   return response;
+// };
 const getAllBookHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+  let findBook = books;
+
+  const numberTrue = '1';
+  const numberFalse = '0';
+
+  console.log(finished === numberTrue);
+  if (name !== undefined) {
+    findBook = books.filter((book) =>
+      book.name.toLowerCase().includes(name.toLowerCase()),
+    );
+  }
+  if (reading === numberTrue) {
+    findBook = books.filter((book) => book.reading === true);
+  }
+  if (reading === numberFalse) {
+    findBook = books.filter((book) => book.reading === false);
+  }
+  if (finished === numberTrue) {
+    findBook = books.filter((book) => book.finished === true);
+  }
+  if (finished === numberFalse) {
+    findBook = books.filter((book) => book.finished === false);
+  }
+
   const response = h.response({
     status: 'success',
     data: {
-      books: books.map((book) => ({
+      books: findBook.map((book) => ({
         id: book.id,
         name: book.name,
         publisher: book.publisher,
       })),
     },
   });
+
   response.code(200);
   return response;
 };
@@ -150,8 +191,8 @@ const editBookById = (request, h) => {
   }
 
   const indexBook = books.findIndex((book) => book.id === bookId);
-  const indexReading = books.findIndex((read) => read.reading == true);
-  console.log('reading', indexReading);
+  // const indexReading = books.findIndex((read) => read.reading == true);
+  // console.log('reading', indexReading);
   if (indexBook !== -1) {
     books[indexBook] = {
       ...books[indexBook],
@@ -172,17 +213,6 @@ const editBookById = (request, h) => {
     response.code(200);
     return response;
   }
-  //* tambah error
-  //  else if (indexReading) {
-  //   const response = h.response({
-  //     data: {
-  //       books,
-  //     },
-  //   });
-  //   response.code(200);
-  //   return response;
-  // }
-
   const response = h.response({
     status: 'fail',
     message: 'Gagal memperbarui buku. Id tidak ditemukan',
@@ -198,8 +228,8 @@ const deleteBookByIdHandler = (request, h) => {
   const indexBook = books.findIndex((book) => book.id === bookId);
   const bookFinished = books.findIndex((finish) => finish.finished == true);
 
-  console.log('indexBook = ', indexBook);
-  console.log('bookFinish = ', bookFinished);
+  // console.log('indexBook = ', indexBook);
+  // console.log('bookFinish = ', bookFinished);
 
   if (indexBook !== -1) {
     books.splice(indexBook, 1);

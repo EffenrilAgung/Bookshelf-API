@@ -13,4 +13,9 @@ const init = async () => {
   console.log('Server Running on %s', server.info.uri);
 };
 
+process.on('unhandledRejection', (err) => {
+  console.error(err);
+  process.exit(1);
+});
+
 init();
